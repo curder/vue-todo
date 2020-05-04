@@ -7,29 +7,20 @@
             :todo="todo"
             :index="index"
             :checkAll="!anyRemaining"
-            @removeTodo="removeTodo"
-            @finishedEdit="finishedEdit"
             :key="todo.id"></todo-item>
     </transition-group>
 
     <div class="extra-container">
-        <div>
-            <label><input type="checkbox" 
-                    @click="checkAllTodos"
-                    :checked="!anyRemaining">Check All</label>
-        </div>
-        <div>{{ remaining }} items left</div>
+        <todo-check-all :anyRemaining="anyRemaining"></todo-check-all>
+
+        <todo-items-remaining :remaining="remaining"></todo-items-remaining>
     </div>
 
     <div class="extra-container">
-        <div>
-            <button :class="{'active': filter === 'all'}" @click="filter = 'all'">All</button>
-            <button :class="{'active': filter === 'active'}" @click="filter = 'active'">Active</button>
-            <button :class="{'active': filter === 'completed'}" @click="filter = 'completed'">Completed</button>
-        </div>
+        <todo-filtered :filter="filter"></todo-filtered>
         <div>
             <transition name="fade">
-                <button v-if="showClearCompletedButton" @click="clearCompleted">Clear Completed</button>
+                <todo-clear-completed :show-clear-completed-button="showClearCompletedButton"></todo-clear-completed>
             </transition>
         </div>
     </div>
@@ -39,6 +30,10 @@
 
 <script>
 import TodoItem from './TodoItem.vue';
+import TodoCheckAll from "./TodoCheckAll.vue";
+import TodoItemsRemaining from "./TodoItemsRemaining.vue";
+import TodoFiltered from "./TodoFiltered.vue";
+import TodoClearCompleted from "./TodoClearCompleted.vue";
 
 export default {
 
@@ -53,6 +48,7 @@ export default {
         filter: 'all',
     }
   },
+
   computed: {
       remaining() {
         return this.todos.filter(todo => !todo.completed).length
@@ -75,12 +71,30 @@ export default {
           return this.todos.filter(todo => todo.completed).length > 0
       }
   },
+
   directives: {
       focus: {
           inserted(el) {
               el.focus()
           }
       }
+  },
+
+  created() {
+      window.eventBus.$on('removeTodo', (index) => this.removeTodo(index))
+      window.eventBus.$on('finishedEdit', (data) => this.finishedEdit(data))
+      window.eventBus.$on('checkAllChanged', (checked) => this.checkAllTodos(checked))
+      window.eventBus.$on('filterChanged', (filter) => this.filter = filter)
+      window.eventBus.$on('clearCompletedTodos', () => this.clearCompleted())
+  },
+
+
+  beforeDestroy() {
+    window.eventBus.$off('removeTodo', (index) => this.removeTodo(index))
+    window.eventBus.$off('finishedEdit', (data) => this.finishedEdit(data))
+    window.eventBus.$off('checkAllChanged', (checked) => this.checkAllTodos(checked))
+    window.eventBus.$off('filterChanged', (filter) => this.filter = filter)
+    window.eventBus.$off('clearCompletedTodos', () => this.clearCompleted())
   },
 
   methods: {
@@ -114,7 +128,11 @@ export default {
   },
 
   components: {
-      TodoItem
+      TodoItem,
+      TodoCheckAll,
+      TodoItemsRemaining,
+      TodoFiltered,
+      TodoClearCompleted,
   }
 }
 </script>
