@@ -2,12 +2,21 @@
   <div>
     <input type="text" class="todo-input" v-model="newTodo" @keyup.enter="addTodo" placeholder="What needs to the done" />
 
-    <div v-for="(todo, index) in todos" :key="todo.id" class="todo-item">
+    <div v-for="(todo, index) in todos" 
+        :key="todo.id" 
+        class="todo-item">
         <div class="todo-item-left">
-            <div v-if="!todo.editing" class="todo-item-label" @dblclick="editTodo(todo)">{{ todo.title }}</div>
-            <input v-else v-focus class="todo-item-edit" 
+            <div v-if="!todo.editing" 
+                class="todo-item-label"
+                @dblclick="editTodo(todo)">{{ todo.title }}</div>
+            <input v-else 
+                v-focus 
+                class="todo-item-edit" 
                 type="text"
+                @blur="doneEdit(todo)"
                 @keyup.enter="doneEdit(todo)"
+                @keyup.esc="cancelEdit(todo)"
+                :tabindex="index"
                 v-model="todo.title" />
         </div>
         <div class="remove-item" @click="removeTodo(index)">&times;</div>
@@ -21,6 +30,7 @@ export default {
   data() {
     return {
         idForTodo: 3,
+        beforeEditCache: '',
         todos: [
             {id: 1, title: "Learn go lang", editing: false, completed: false},
             {id: 2, title: "Finish vue screencast", editing: false, completed: false}
@@ -52,9 +62,18 @@ export default {
           this.idForTodo++
       },
       editTodo(todo) {
+          this.beforeEditCache = todo.title
           todo.editing = true
       },
       doneEdit(todo) {
+          if (todo.title.trim() === '') {
+            todo.title = this.beforeEditCache
+          }
+          todo.editing = false
+      },
+      cancelEdit(todo) {
+          console.log(todo)
+          todo.title = this.beforeEditCache
           todo.editing = false
       },
       removeTodo(index) {
