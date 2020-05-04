@@ -78,10 +78,10 @@ export default {
               return this.todos
           } else if (this.filter === 'active') {
               return this.todos.filter(todo => !todo.completed)
-          } else if (this.fitler === 'completed') {
+          } else if (this.filter === 'completed') {
               return this.todos.filter(todo => todo.completed)
           }
-
+          
           return this.todos;
       },
       showClearCompletedButton() {
@@ -139,7 +139,7 @@ export default {
 </script>
 <style lang="scss">
     @import url("https://cdn.bootcdn.net/ajax/libs/animate.css/3.7.2/animate.min.css");
-    
+
     .todo-input {
         width: 100%;
         padding: 10px 18px;
