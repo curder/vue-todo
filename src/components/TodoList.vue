@@ -6,8 +6,10 @@
         :key="todo.id" 
         class="todo-item">
         <div class="todo-item-left">
+            <input type="checkbox" v-model="todo.completed" />
             <div v-if="!todo.editing" 
                 class="todo-item-label"
+                :class="{'completed': todo.completed}"
                 @dblclick="editTodo(todo)">{{ todo.title }}</div>
             <input v-else 
                 v-focus 
@@ -32,7 +34,7 @@ export default {
         idForTodo: 3,
         beforeEditCache: '',
         todos: [
-            {id: 1, title: "Learn go lang", editing: false, completed: false},
+            {id: 1, title: "Learn go lang", editing: false, completed: true},
             {id: 2, title: "Finish vue screencast", editing: false, completed: false}
         ],
         newTodo: ''
@@ -107,7 +109,12 @@ export default {
             padding: 10px;
             border: 1px solid white;
             margin-left: 12px;
+            &.completed {
+                text-decoration: line-through;
+                color: grey;
+            }
         }
+        
         .todo-item-edit {
             font-size: 24px;
             color: #2c3e50;
