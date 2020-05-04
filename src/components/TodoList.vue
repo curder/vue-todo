@@ -23,6 +23,12 @@
         </div>
         <div class="remove-item" @click="removeTodo(index)">&times;</div>
     </div>
+
+    <div class="extra-container">
+        <div><label><input type="checkbox">Check All</label></div>
+        <div>{{ remaining }} items left</div>
+    </div>
+
   </div>
 </template>
 
@@ -34,13 +40,17 @@ export default {
         idForTodo: 3,
         beforeEditCache: '',
         todos: [
-            {id: 1, title: "Learn go lang", editing: false, completed: true},
+            {id: 1, title: "Learn go lang", editing: false, completed: false},
             {id: 2, title: "Finish vue screencast", editing: false, completed: false}
         ],
         newTodo: ''
     }
   },
-
+  computed: {
+      remaining() {
+        return this.todos.filter(todo => !todo.completed).length
+      }
+  },
   directives: {
       focus: {
           inserted(el) {
@@ -137,5 +147,25 @@ export default {
         }
     }
 
+    .extra-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 16px;
+        border-top: 1px solid lightgrey;
+        padding-top: 14px;
+        margin-bottom: 14px;
+    }
+    button {
+        font-size: 14px;
+        background-color: white;
+        appearance: none;
+        &:hover {
+        background: lightgreen;
+        }
+        &:focus {
+        outline: none;
+        }
+    }
 
 </style>
