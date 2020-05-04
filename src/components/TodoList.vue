@@ -3,27 +3,13 @@
     <input type="text" class="todo-input" v-model="newTodo" @keyup.enter="addTodo" placeholder="What needs to the done" />
 
     <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
-        <div v-for="(todo, index) in todosFilterd" 
-            :key="todo.id" 
-            class="todo-item">
-            <div class="todo-item-left">
-                <input type="checkbox" v-model="todo.completed" />
-                <div v-if="!todo.editing" 
-                    class="todo-item-label"
-                    :class="{'completed': todo.completed}"
-                    @dblclick="editTodo(todo)">{{ todo.title }}</div>
-                <input v-else 
-                    v-focus 
-                    class="todo-item-edit" 
-                    type="text"
-                    @blur="doneEdit(todo)"
-                    @keyup.enter="doneEdit(todo)"
-                    @keyup.esc="cancelEdit(todo)"
-                    :tabindex="index"
-                    v-model="todo.title" />
-            </div>
-            <div class="remove-item" @click="removeTodo(index)">&times;</div>
-        </div>
+        <todo-item v-for="(todo, index) in todosFilterd" 
+            :todo="todo"
+            :index="index"
+            :checkAll="!anyRemaining"
+            @removeTodo="removeTodo"
+            @finishedEdit="finishedEdit"
+            :key="todo.id"></todo-item>
     </transition-group>
 
     <div class="extra-container">
@@ -52,12 +38,13 @@
 </template>
 
 <script>
+import TodoItem from './TodoItem.vue';
+
 export default {
 
   data() {
     return {
         idForTodo: 3,
-        beforeEditCache: '',
         todos: [
             {id: 1, title: "Learn go lang", editing: false, completed: false},
             {id: 2, title: "Finish vue screencast", editing: false, completed: false}
@@ -110,20 +97,10 @@ export default {
           this.newTodo = ''
           this.idForTodo++
       },
-      editTodo(todo) {
-          this.beforeEditCache = todo.title
-          todo.editing = true
-      },
-      doneEdit(todo) {
-          if (todo.title.trim() === '') {
-            todo.title = this.beforeEditCache
-          }
-          todo.editing = false
-      },
-      cancelEdit(todo) {
-          console.log(todo)
-          todo.title = this.beforeEditCache
-          todo.editing = false
+
+      finishedEdit({index, todo}) {
+          // this.todos[index] = todo
+          this.todos.splice(index, 1, todo)
       },
       removeTodo(index) {
           this.todos.splice(index, 1)
@@ -134,6 +111,10 @@ export default {
       clearCompleted() {
           this.todos = this.todos.filter(todo => !todo.completed)
       }
+  },
+
+  components: {
+      TodoItem
   }
 }
 </script>
