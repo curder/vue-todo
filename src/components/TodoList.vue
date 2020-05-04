@@ -2,7 +2,7 @@
   <div>
     <input type="text" class="todo-input" v-model="newTodo" @keyup.enter="addTodo" placeholder="What needs to the done" />
 
-    <div v-for="(todo, index) in todos" 
+    <div v-for="(todo, index) in todosFilterd" 
         :key="todo.id" 
         class="todo-item">
         <div class="todo-item-left">
@@ -33,6 +33,15 @@
         <div>{{ remaining }} items left</div>
     </div>
 
+    <div class="extra-container">
+        <div>
+            <button :class="{'active': filter === 'all'}" @click="filter = 'all'">All</button>
+            <button :class="{'active': filter === 'active'}" @click="filter = 'active'">Active</button>
+            <button :class="{'active': filter === 'completed'}" @click="filter = 'completed'">Completed</button>
+        </div>
+        <div>Clear Completed</div>
+    </div>
+
   </div>
 </template>
 
@@ -47,7 +56,8 @@ export default {
             {id: 1, title: "Learn go lang", editing: false, completed: false},
             {id: 2, title: "Finish vue screencast", editing: false, completed: false}
         ],
-        newTodo: ''
+        newTodo: '',
+        filter: 'all',
     }
   },
   computed: {
@@ -56,6 +66,17 @@ export default {
       },
       anyRemaining() {
           return this.remaining !== 0
+      },
+      todosFilterd() {
+          if (this.filter === 'all') {
+              return this.todos
+          } else if (this.filter === 'active') {
+              return this.todos.filter(todo => !todo.completed)
+          } else if (this.fitler === 'completed') {
+              return this.todos.filter(todo => todo.completed)
+          }
+
+          return this.todos;
       }
   },
   directives: {
@@ -171,10 +192,20 @@ export default {
         background-color: white;
         appearance: none;
         &:hover {
-        background: lightgreen;
+            background: lightgreen;
         }
         &:focus {
-        outline: none;
+            outline: none;
+        }
+        &.active {
+            background: lightgreen;
+        }
+        // CSS Transitions
+        .fade-enter-active, .fade-leave-active {
+            transition: opacity .2s;
+        }
+        .fade-enter, .fade-leave-to {
+            opacity: 0;
         }
     }
 
