@@ -1,23 +1,22 @@
 <template>
-<div>
+  <div>
     <button :class="{'active': filter === 'all'}" @click="changeFilter('all')">All</button>
     <button :class="{'active': filter === 'active'}" @click="changeFilter('active')">Active</button>
     <button :class="{'active': filter === 'completed'}" @click="changeFilter('completed')">Completed</button>
-</div>
+  </div>
 </template>
 <script>
 export default {
-    props: {
-        filter: {
-            type: String,
-            required: true,
-        }
-    },
-
-    methods: {
-        changeFilter(filter) {
-            window.eventBus.$emit('filterChanged', filter)
-        }
+  computed: {
+    filter() {
+      return this.$store.state.filter
     }
+  },
+
+  methods: {
+    changeFilter(filter) {
+      this.$store.dispatch('updateFilter', filter)
+    }
+  }
 }
 </script>

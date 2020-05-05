@@ -1,21 +1,20 @@
 <template>
-    <label><input type="checkbox" 
+  <label><input type="checkbox"
                 @click="checkAllTodos"
                 :checked="!anyRemaining">Check All</label>
 </template>
 
 <script>
-    export default {
-        props: {
-            anyRemaining: {
-                type: Boolean,
-                required: true,
-            }
-        },
-        methods: {
-            checkAllTodos() {
-                window.eventBus.$emit('checkAllChanged', this.anyRemaining)
-            }
-        }
+export default {
+  computed: {
+    anyRemaining() {
+      return this.$store.getters.anyRemaining
     }
+  },
+  methods: {
+    checkAllTodos() {
+      this.$store.dispatch('checkAll', event.target.checked)
+    }
+  }
+}
 </script>
