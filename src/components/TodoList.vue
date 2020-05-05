@@ -171,6 +171,7 @@ button {
   font-size: 14px;
   background-color: white;
   appearance: none;
+  padding: 2px 6px;
 
   &:hover {
     background: lightgreen;
