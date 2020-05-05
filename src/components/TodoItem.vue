@@ -76,7 +76,12 @@ export default {
       }
       this.editing = false
 
-      this.$store.dispatch("updateTodo", this.todo)
+      this.$store.dispatch("updateTodo", {
+        'id': this.id,
+        'title': this.title,
+        'completed': this.completed,
+        'editing': this.editing,
+      })
     },
 
     cancelEdit() {
@@ -90,7 +95,12 @@ export default {
 
     pluralize() {
       this.title = this.title + 's'
-      this.$store.dispatch("updateTodo", this.todo)
+      this.$store.dispatch("updateTodo", {
+        'id': this.id,
+        'title': this.title,
+        'completed': this.completed,
+        'editing': this.editing,
+      })
     },
   }
 }
