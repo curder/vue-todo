@@ -50,7 +50,9 @@ export const store = new Vuex.Store({
 
     deleteTodo(state, id) {
       const index = state.todos.findIndex(item => item.id === id)
-      state.todos.splice(index, 1)
+      if (index >= 0) {
+        state.todos.splice(index, 1)
+      }
     },
 
     updateTodo(state, todo) {
@@ -77,6 +79,34 @@ export const store = new Vuex.Store({
   },
 
   actions: {
+    initRealtimeListeners(context) {
+      db.collection(`todos`).onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          const [id, title, completed] = [change.doc.id, change.doc.data().title, change.doc.data().completed];
+          if (change.type === 'added') {
+            const source = snapshot.metadata.hasPendingWrites ? 'Local' : 'Server'
+
+            if (source === "Server") {
+              context.commit(`addTodo`, {
+                id, title, completed: false,
+              })
+            }
+          }
+
+          if (change.type === 'modified') {
+            context.commit('updateTodo', {
+              id, title, completed,
+            })
+          }
+
+          if (change.type === 'removed') {
+            context.commit(`deleteTodo`, id)
+          }
+
+        })
+      })
+    },
+
     retrieveTodos(context) {
       context.state.loading = true
       db.collection(`todos`).get()
@@ -97,7 +127,8 @@ export const store = new Vuex.Store({
           context.commit(`retrieveTodos`, tempTodosSorted)
           context.state.loading = false
         })
-    },
+    }
+    ,
 
     addTodo(context, todo) {
       db.collection(`todos`).add({
@@ -112,40 +143,46 @@ export const store = new Vuex.Store({
             completed: false,
           })
         })
-    },
+    }
+    ,
 
     deleteTodo(context, id) {
       db.collection(`todos`).doc(id).delete()
         .then(() => {
           context.commit("deleteTodo", id)
         })
-    },
+    }
+    ,
 
     updateTodo(context, todo) {
       db.collection(`todos`).doc(todo.id).set({
         id: todo.id,
         title: todo.title,
         completed: todo.completed,
-        created_at: new Date(),
-      }).then(() => {
+        // created_at: new Date(),
+      }, {merge: true}).then(() => {
         context.commit("updateTodo", todo)
       })
-    },
+    }
+    ,
 
     clearCompleted(context) {
       db.collection(`todos`).where('completed', '==', true).get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
-            doc.ref.delete().then(() => {
-              context.commit("clearCompleted")
-            })
+            doc.ref.delete()
+              .then(() => {
+                context.commit("clearCompleted")
+              })
           })
         })
-    },
+    }
+    ,
 
     updateFilter(context, filter) {
       context.commit("updateFilter", filter)
-    },
+    }
+    ,
 
     checkAll(context, checked) {
       db.collection(`todos`).get()
@@ -158,7 +195,8 @@ export const store = new Vuex.Store({
             })
           })
         })
-    },
+    }
+    ,
 
   },
 
