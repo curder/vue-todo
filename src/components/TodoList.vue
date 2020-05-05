@@ -3,6 +3,8 @@
     <input type="text" class="todo-input" v-model="newTodo" @keyup.enter="addTodo"
            placeholder="What needs to the done"/>
 
+    <Loading v-if="$store.state.loading" />
+
     <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
       <todo-item v-for="(todo, index) in todoListFiltered"
                  :todo="todo"
@@ -30,6 +32,7 @@
 </template>
 
 <script>
+import Loading from './Loading.vue';
 import TodoItem from './TodoItem.vue';
 import TodoCheckAll from "./TodoCheckAll.vue";
 import TodoItemsRemaining from "./TodoItemsRemaining.vue";
@@ -52,6 +55,10 @@ export default {
     todoListFiltered() {
       return this.$store.getters.todoListFiltered
     },
+  },
+
+  created() {
+      this.$store.dispatch("retrieveTodos")
   },
 
   directives: {
@@ -80,6 +87,7 @@ export default {
   },
 
   components: {
+    Loading,
     TodoItem,
     TodoCheckAll,
     TodoItemsRemaining,
