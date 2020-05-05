@@ -1,24 +1,27 @@
 # vue-todo
 
-## Project setup
+## 获取代码
+
+```
+git clone git@github.com/curder/vue-todo.git
+```
+
+## 更新前端以来
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### 开发编译
 ```
 yarn serve
 ```
 
-### Compiles and minifies for production
+### 生产编译
 ```
 yarn build
 ```
 
-### Lints and fixes files
+### 代码检查和修复
 ```
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
