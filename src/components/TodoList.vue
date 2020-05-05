@@ -54,6 +54,10 @@ export default {
     },
   },
 
+  created() {
+    this.$store.dispatch(`retrieveTodos`)
+  },
+
   directives: {
     focus: {
       inserted(el) {
