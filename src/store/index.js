@@ -8,6 +8,7 @@ axios.defaults.baseURL = "http://laravel-todo.test/api"
 
 export const store = new Vuex.Store({
   state: {
+    loading: false,
     todos: [],
     filter: 'all',
   },
@@ -80,8 +81,10 @@ export const store = new Vuex.Store({
   actions: {
     // fetch a listing of the resource.
     retrieveTodos(context) {
+      context.state.loading = true
       axios.get("/todos")
         .then(({data}) => {
+          context.state.loading = false
           context.commit("retrieveTodos", data)
         })
         .catch(error => {
