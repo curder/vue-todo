@@ -3,14 +3,18 @@
     <h2 class="login-heading">Login</h2>
     <form action="#" @submit.prevent="loginHandle">
 
+      <div v-if="serverError" class="server-error">{{ serverError }}</div>
+
       <div class="form-control">
         <label for="username">Username/Email</label>
-        <input type="email" name="username" id="username" class="login-input" v-model="username">
+        <input type="email" name="username" id="username" class="login-input" v-model="form.username">
+        <span v-if="form.errors.has('username')" class="form-error">{{form.errors.first('username')}}</span>
       </div>
 
       <div class="form-control mb-more">
         <label for="password">Password</label>
-        <input type="password" name="password" id="password" class="login-input" v-model="password">
+        <input type="password" name="password" id="password" class="login-input" v-model="form.password">
+        <span v-if="form.errors.has('password')" class="form-error">{{form.errors.first('password')}}</span>
       </div>
 
       <div class="form-control">
@@ -21,25 +25,30 @@
   </div>
 </template>
 <script>
+import Form from 'form-backend-validation'
+
 export default {
   data() {
     return {
-      username: '',
-      password: '',
+      form: new Form({
+        username: '',
+        password: '',
+      }),
+      serverError: '',
     }
   },
 
   methods: {
     loginHandle() {
       this.$store.dispatch(`retrieveToken`, {
-        username: this.username,
-        password: this.password,
+        username: this.form.username,
+        password: this.form.password,
       })
         .then(() => {
-            this.$router.push({name: 'todos'})
+          this.$router.push({name: 'todos'})
         })
         .catch(err => {
-          alert(err.message)
+          this.serverError = err.message
         })
     }
   }
@@ -49,6 +58,15 @@ export default {
 .login-form {
   max-width: 500px;
   margin: auto;
+
+  .server-error {
+    margin-bottom: 12px;
+    font-size: 16px;
+    padding: 10px 16px;
+    color: #A94442;
+    background: #F3DEDE;
+    border-radius: 4px;
+  }
 
   .login-heading {
     margin-bottom: 16px;

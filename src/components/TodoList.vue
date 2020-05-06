@@ -1,9 +1,10 @@
 <template>
   <div>
+    <div class="username-container">Welcome，{{ username }}</div>
     <input type="text" class="todo-input" v-model="newTodo" @keyup.enter="addTodo"
            placeholder="What needs to the done"/>
 
-    <Loading v-if="$store.state.loading" />
+    <Loading v-if="$store.state.loading"/>
 
     <transition-group name="fade" enter-active-class="animated fadeInUp" leave-active-class="animated fadeOutDown">
       <todo-item v-for="(todo, index) in todoListFiltered"
@@ -43,6 +44,7 @@ export default {
 
   data() {
     return {
+      username: `test`,
       idForTodo: 3,
       newTodo: '',
     }
@@ -59,6 +61,10 @@ export default {
 
   created() {
     this.$store.dispatch(`retrieveTodos`)
+    this.$store.dispatch(`retrieveUserName`)
+      .then(({data}) => {
+        this.username = data.name
+      })
   },
 
   directives: {
@@ -98,6 +104,10 @@ export default {
 </script>
 <style lang="scss">
 @import url("https://cdn.bootcdn.net/ajax/libs/animate.css/3.7.2/animate.min.css");
+
+.username-container {
+  margin-bottom: 16px;
+}
 
 .todo-input {
   width: 100%;
