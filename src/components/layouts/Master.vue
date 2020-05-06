@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <ul class="nav">
-      <li>
-        <router-link :to="{name: 'home'}">Home</router-link>
+      <li class="todo-logo">
+        <router-link :to="{name: 'todos'}">Todo</router-link>
       </li>
       <li>
-        <router-link :to="{name: 'todos'}">App</router-link>
+        <router-link :to="{name: 'home'}">Home</router-link>
       </li>
       <li>
         <router-link :to="{name: 'about'}">About</router-link>
@@ -16,9 +16,10 @@
       <li v-if="!loggedIn">
         <router-link :to="{name: 'login'}">Login</router-link>
       </li>
-      <li v-if="loggedIn"><router-link :to="{name: 'logout'}">Logout</router-link></li>
+      <li v-if="loggedIn">
+        <router-link :to="{name: 'logout'}">Logout</router-link>
+      </li>
     </ul>
-
     <router-view></router-view>
 
   </div>
@@ -55,12 +56,22 @@ export default {
 
 .nav {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   list-style: none;
   padding: 15px 0;
-  justify-content: flex-end;
   background: #F5F8FA;
   border-bottom: 1px solid lightgrey;
   margin: 0 0 24px;
+
+  .todo-logo {
+    flex-grow: 1;
+    margin-left: 25px;
+
+    a {
+      font-size: 18px;
+    }
+  }
 
   a {
     color: #636b6f;
