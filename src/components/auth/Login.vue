@@ -36,7 +36,10 @@ export default {
         password: this.password,
       })
         .then(() => {
-          this.$router.push({name: 'todos'})
+            this.$router.push({name: 'todos'})
+        })
+        .catch(err => {
+          alert(err.message)
         })
     }
   }

@@ -8,7 +8,7 @@ axios.defaults.baseURL = "http://laravel-todo.test/api"
 
 export const store = new Vuex.Store({
   state: {
-    token: localStorage.getItem(`access_token`),
+    token: localStorage.getItem(`access_token`) || null,
     loading: false,
     todos: [],
     filter: 'all',
@@ -44,6 +44,10 @@ export const store = new Vuex.Store({
   },
 
   mutations: {
+    clearTodos(state) {
+      state.todos = []
+    },
+
     destroyToken(state) {
       state.token = null
     },
@@ -94,6 +98,9 @@ export const store = new Vuex.Store({
   },
 
   actions: {
+    clearTodos(context) {
+      context.commit(`clearTodos`)
+    },
     register(context, data) {
       return new Promise((resolve, reject) => {
         axios.post("/register", data)
@@ -133,13 +140,15 @@ export const store = new Vuex.Store({
           password: credentials.password,
         })
           .then(({data}) => {
-            const token = data.access_token
-            localStorage.setItem(`access_token`, token) // save to localStorage
-            context.commit("retrieveToken", token)
-            resolve(data)
+            if (data.access_token) {
+              const token = data.access_token
+              localStorage.setItem(`access_token`, token) // save to localStorage
+              context.commit("retrieveToken", token)
+              resolve(data)
+            }
+            reject(data)
           })
           .catch(error => {
-            console.log(error)
             reject(error)
           })
       })
