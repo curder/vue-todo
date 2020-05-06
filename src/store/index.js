@@ -8,18 +8,25 @@ axios.defaults.baseURL = "http://laravel-todo.test/api"
 
 export const store = new Vuex.Store({
   state: {
+    token: localStorage.getItem(`access_token`),
     loading: false,
     todos: [],
     filter: 'all',
   },
 
   getters: {
+    loggedIn(state) {
+      return state.token !== null
+    },
+
     remaining(state) {
       return state.todos.filter(todo => !todo.completed).length
     },
+
     anyRemaining(state, getters) {
       return getters.remaining !== 0
     },
+
     todoListFiltered(state) {
       if (state.filter === 'all') {
         return state.todos
@@ -37,6 +44,14 @@ export const store = new Vuex.Store({
   },
 
   mutations: {
+    destroyToken(state) {
+      state.token = null
+    },
+
+    retrieveToken(state, token) {
+      state.token = token
+    },
+
     addTodo(state, todo) {
       state.todos.push({
         id: todo.id,
@@ -79,8 +94,60 @@ export const store = new Vuex.Store({
   },
 
   actions: {
+    register(context, data) {
+      return new Promise((resolve, reject) => {
+        axios.post("/register", data)
+          .then(({data}) => {
+            resolve(data)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+
+    destroyToken(context) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${context.state.token}`
+
+      if (context.getters.loggedIn) {
+        return new Promise((resolve, reject) => {
+          axios.post("/logout")
+            .then(({data}) => {
+              localStorage.removeItem(`access_token`) // delete to localStorage
+              context.commit("destroyToken")
+              resolve(data)
+            })
+            .catch(error => {
+              localStorage.removeItem(`access_token`) // delete to localStorage
+              context.commit("destroyToken")
+              reject(error)
+            })
+        })
+      }
+    },
+
+    retrieveToken(context, credentials) {
+      return new Promise((resolve, reject) => {
+        axios.post("/login", {
+          username: credentials.username,
+          password: credentials.password,
+        })
+          .then(({data}) => {
+            const token = data.access_token
+            localStorage.setItem(`access_token`, token) // save to localStorage
+            context.commit("retrieveToken", token)
+            resolve(data)
+          })
+          .catch(error => {
+            console.log(error)
+            reject(error)
+          })
+      })
+    },
+
     // fetch a listing of the resource.
     retrieveTodos(context) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${context.state.token}`
       context.state.loading = true
       axios.get("/todos")
         .then(({data}) => {
