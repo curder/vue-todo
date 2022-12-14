@@ -6,9 +6,9 @@
 git clone git@github.com/curder/vue-todo.git
 ```
 
-## 更新前端以来
+## 更新前端依赖
 ```
-yarn install
+yarn
 ```
 
 ### 开发编译
